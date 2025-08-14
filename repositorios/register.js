@@ -1,44 +1,52 @@
-// register.js
+document.addEventListener('DOMContentLoaded', () => {
+    const registerForm = document.getElementById('registerForm');
 
-// Esperar a que el DOM cargue completamente
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("registerForm");
+    registerForm.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault(); // Prevenir envío automático del formulario
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const confirmPassword = document.getElementById('confirmPassword').value.trim();
 
-    // Obtener valores ingresados
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+        // Validación: campos vacíos
+        if (!name || !email || !password || !confirmPassword) {
+            alert("Por favor, completa todos los campos.");
+            return;
+        }
 
-    // Validar campos
-    if (!name || !email || !password) {
-      alert("Por favor completa todos los campos.");
-      return;
-    }
+        // Validación: formato de correo
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("Por favor, ingresa un correo electrónico válido.");
+            return;
+        }
 
-    // Obtener cuentas existentes del localStorage
-    let accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+        // Validación: contraseña segura
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/; // Mínimo 6 caracteres, letras y números
+        if (!passwordRegex.test(password)) {
+            alert("La contraseña debe tener al menos 6 caracteres, incluyendo letras y números.");
+            return;
+        }
 
-    // Verificar si ya existe una cuenta con ese correo
-    const exists = accounts.some(account => account.email === email);
+        // Validación: confirmación de contraseña
+        if (password !== confirmPassword) {
+            alert("Las contraseñas no coinciden.");
+            return;
+        }
 
-    if (exists) {
-      alert("Ya existe una cuenta con este correo.");
-      return;
-    }
+        // Validación: usuario existente
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        if (users.find(user => user.email === email)) {
+            alert("El correo ya está registrado. Intenta con otro.");
+            return;
+        }
 
-    // Crear objeto de cuenta nueva
-    const newAccount = { name, email, password };
+        // Guardar usuario
+        users.push({ name, email, password });
+        localStorage.setItem('users', JSON.stringify(users));
 
-    // Guardar en localStorage
-    accounts.push(newAccount);
-    localStorage.setItem("accounts", JSON.stringify(accounts));
-
-    alert("Cuenta creada exitosamente 🎉");
-
-    // Redirigir al login
-    window.location.href = "login.html";
-  });
+        alert("Cuenta creada con éxito.");
+        window.location.href = 'login.html';
+    });
 });

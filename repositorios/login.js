@@ -1,30 +1,44 @@
-// login.js
+document.addEventListener('DOMContentLoaded', () => {
+    const loginForm = document.getElementById('loginForm');
 
-document.addEventListener("DOMContentLoaded", () => {
-  const form = document.getElementById("loginForm");
+    loginForm.addEventListener('submit', (event) => {
+        event.preventDefault();
 
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value.trim();
 
-    // Obtener valores del formulario
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
+        // Validación: campos vacíos
+        if (!email || !password) {
+            alert("Por favor, completa todos los campos.");
+            return;
+        }
 
-    // Obtener cuentas guardadas
-    const accounts = JSON.parse(localStorage.getItem("accounts")) || [];
+        // Validación: formato de correo
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            alert("Por favor, ingresa un correo electrónico válido.");
+            return;
+        }
 
-    // Buscar coincidencia
-    const user = accounts.find(acc => acc.email === email && acc.password === password);
+        // Validación: longitud de contraseña
+        if (password.length < 6) {
+            alert("La contraseña debe tener al menos 6 caracteres.");
+            return;
+        }
 
-    if (user) {
-      // Guardar nombre del usuario en sesión
-      localStorage.setItem("currentUser", JSON.stringify(user));
-      alert("Inicio de sesión exitoso ✅");
+        // Verificar usuario en localStorage
+        const users = JSON.parse(localStorage.getItem('users')) || [];
+        const user = users.find(user => user.email === email && user.password === password);
 
-      // Redirigir al dashboard
-      window.location.href = "dashboard.html";
-    } else {
-      alert("Correo o contraseña incorrectos ❌");
-    }
-  });
+        if (!user) {
+            alert("Correo o contraseña incorrectos.");
+            return;
+        }
+
+        // Guardar sesión activa
+        localStorage.setItem('usuarioActivo', JSON.stringify(user));
+
+        alert(`Bienvenido ${user.name}`);
+        window.location.href = 'dashboard.html';
+    });
 });

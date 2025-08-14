@@ -1,25 +1,27 @@
-// dashboard.js
+document.addEventListener('DOMContentLoaded', () => {
+    // Obtener usuario activo desde localStorage
+    const usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo'));
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Obtener usuario actual de localStorage
-  const currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    // Si no hay usuario logueado, redirigir al login
+    if (!usuarioActivo) {
+        alert("Debes iniciar sesión para acceder al dashboard.");
+        window.location.href = 'login.html';
+        return;
+    }
 
-  // Si no hay usuario logueado, redirigir al login
-  if (!currentUser) {
-    window.location.href = "login.html";
-    return; // Para detener ejecución si no hay usuario
-  }
+    // Mostrar nombre del usuario en el dashboard
+    const userNameElement = document.getElementById('userName');
+    if (userNameElement) {
+        userNameElement.textContent = usuarioActivo.name;
+    }
 
-  // Mostrar el nombre del usuario en el span
-  const usernameDisplay = document.getElementById("usernameDisplay");
-  usernameDisplay.textContent = currentUser.email.split("@")[0]; // Usamos la parte antes de @
-
-  // Botón para cerrar sesión
-  const logoutBtn = document.getElementById("logoutBtn");
-  logoutBtn.addEventListener("click", () => {
-    // Borrar el usuario actual
-    localStorage.removeItem("currentUser");
-    // Redirigir al login
-    window.location.href = "login.html";
-  });
+    // Botón de cerrar sesión
+    const logoutButton = document.getElementById('logout');
+    if (logoutButton) {
+        logoutButton.addEventListener('click', () => {
+            localStorage.removeItem('usuarioActivo');
+            alert("Sesión cerrada.");
+            window.location.href = 'login.html';
+        });
+    }
 });
